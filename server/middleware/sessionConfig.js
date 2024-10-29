@@ -10,7 +10,7 @@ const sessionMiddleware = session({
     resave: false,
     saveUninitialized: false,
     cookie: { 
-        secure: true,
+        secure: false,
         maxAge: 1800000 // 30 minutos
     }
 });
