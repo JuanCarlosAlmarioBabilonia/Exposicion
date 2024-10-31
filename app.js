@@ -269,12 +269,14 @@ app.use("/", index);
  */
 // Ruta para servir el dashboard
 app.get('/dashboard', (req, res) => {
+  console.log("Usuario autenticado:", req.isAuthenticated());
   if (req.isAuthenticated()) {
-    res.sendFile(join(__dirname, 'src/view/dashBoard.html'));
+      res.sendFile(join(__dirname, 'src/view/dashBoard.html'));
   } else {
-    res.redirect('https://exposicion-six.vercel.app');
+      res.redirect('https://exposicion-six.vercel.app');
   }
 });
+
 
 
 /**

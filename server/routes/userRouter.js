@@ -26,7 +26,19 @@ router.get('/auth/google/callback', passport.authenticate('google', {
     failureRedirect: '/login' // Página en caso de fallo en la autenticación
 }));
 
+/**
+ * Ruta para iniciar la autenticación con Discord.
+ * @name GET /auth/discord
+ * @function
+ */
+router.get('/auth/discord', passport.authenticate('discord', { scope: ['identify', 'email'] })); 
 
+/**
+ * Ruta de callback para Discord después de la autenticación.
+ * Redirige a /dashboard si la autenticación es exitosa, o a /login si falla.
+ * @name GET /auth/discord/callback
+ * @function
+ */
 router.get('/auth/discord/callback', (req, res, next) => {
     passport.authenticate('discord', {
         failureRedirect: 'https://exposicion-six.vercel.app' // Redirige si la autenticación falla
@@ -45,7 +57,6 @@ router.get('/auth/discord/callback', (req, res, next) => {
         });
     })(req, res, next);
 });
-
 
 /**
  * Ruta para iniciar la autenticación con Facebook.
