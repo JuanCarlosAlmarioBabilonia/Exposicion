@@ -40,8 +40,8 @@ router.get('/auth/discord', passport.authenticate('discord', { scope: ['identify
  * @function
  */
 router.get('/auth/discord/callback', passport.authenticate('discord', {
-    successRedirect: '/dashboard', // Página después de iniciar sesión
-    failureRedirect: '/login' // Página en caso de fallo en la autenticación
+    successRedirect: 'https://juancarlosalmariobabilonia.github.io/Exposicion/src/view/dashBoard', // Página después de iniciar sesión
+    failureRedirect: 'https://exposicion-ashy.vercel.app/' // Página en caso de fallo en la autenticación
 }));
 
 /**
