@@ -267,13 +267,15 @@ app.use("/", index);
  * @name GET /dashboard
  * @function
  */
-app.get('/dashboard', (req, res) => { 
-  if (req.isAuthenticated()) { 
-    res.send('Bienvenido al Dashboard'); 
-  } else { 
-    res.redirect('/auth/google'); 
-  } 
+// Ruta para servir el dashboard
+app.get('/dashboard', (req, res) => {
+  if (req.isAuthenticated()) {
+    res.sendFile(join(__dirname, 'src/view/dashBoard.html'));
+  } else {
+    res.redirect('/auth/discord');
+  }
 });
+
 
 /**
  * Puerto y host para el servidor.
