@@ -272,7 +272,7 @@ app.get('/dashboard', (req, res) => {
   if (req.isAuthenticated()) {
     res.sendFile(join(__dirname, 'src/view/dashBoard.html'));
   } else {
-    res.redirect(':(');
+    res.redirect('/auth/discord');
   }
 });
 
