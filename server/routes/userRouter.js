@@ -39,24 +39,10 @@ router.get('/auth/discord', passport.authenticate('discord', { scope: ['identify
  * @name GET /auth/discord/callback
  * @function
  */
-router.get('/auth/discord/callback', (req, res, next) => {
-    passport.authenticate('discord', {
-        failureRedirect: 'https://exposicion-six.vercel.app' // Redirige si la autenticación falla
-    }, (err, user, info) => {
-        if (err) {
-            return next(err); // Manejo de errores
-        }
-        if (!user) {
-            return res.redirect('https://exposicion-six.vercel.app'); // Redirige si no hay usuario
-        }
-        req.logIn(user, (err) => {
-            if (err) {
-                return next(err); // Manejo de errores al iniciar sesión
-            }
-            return res.redirect('/dashboard'); // Redirige a dashboard si la autenticación es exitosa
-        });
-    })(req, res, next);
-});
+router.get('/auth/discord/callback', passport.authenticate('discord', {
+    successRedirect: '/dashboard', // Página después de iniciar sesión
+    failureRedirect: 'https://exposicion-six.vercel.app' // Página en caso de fallo en la autenticación
+}));
 
 /**
  * Ruta para iniciar la autenticación con Facebook.
