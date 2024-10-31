@@ -1,60 +1,89 @@
-// server.js
-const express = require('express');
-const passport = require('passport');
-const database = require("./server/database/connect");
-const sessionMiddleware = require("./server/middleware/sessionConfig");
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const DiscordStrategy = require('passport-discord').Strategy;  
-const FacebookStrategy = require('passport-facebook').Strategy;
-const authRoutes = require('./server/routes/userRouter');
-const index = require("./server/routes/indexRouter");
-const User = require("./server/model/userSchema");
-const { join } = require("path");
+/**
+ * @file Archivo principal de la aplicación Express que maneja la autenticación mediante diferentes proveedores.
+ * @requires dotenv
+ * @requires express
+ * @requires passport
+ * @requires passport-google-oauth20
+ * @requires passport-discord
+ * @requires passport-facebook
+ * @requires ./server/database/connect
+ * @requires ./server/middleware/sessionConfig
+ * @requires ./server/routes/userRouter
+ * @requires ./server/routes/indexRouter
+ * @requires ./server/model/userSchema
+ * @requires path
+ */
 
-require('dotenv').config(); // Importa y configura dotenv al inicio
+require('dotenv').config(); // Carga las variables de entorno desde .env
 
-// Conectar a la base de datos
-database.getInstance();
-require("./src/js/passportConfig"); // Configuración de Passport
+const express = require('express'); // Framework web para Node.js
+const passport = require('passport'); // Middleware de autenticación
+const database = require("./server/database/connect"); // Conexión a la base de datos
+const sessionMiddleware = require("./server/middleware/sessionConfig"); // Middleware para manejar sesiones
+const GoogleStrategy = require('passport-google-oauth20').Strategy; // Estrategia de autenticación de Google
+const DiscordStrategy = require('passport-discord').Strategy; // Estrategia de autenticación de Discord
+const FacebookStrategy = require('passport-facebook').Strategy; // Estrategia de autenticación de Facebook
+const authRoutes = require('./server/routes/userRouter'); // Rutas de autenticación
+const index = require("./server/routes/indexRouter"); // Ruta principal
+const User = require("./server/model/userSchema"); // Modelo de usuario
+const { join } = require("path"); // Módulo para manejar rutas
 
+/**
+ * Instancia principal de la aplicación Express.
+ * @type {import('express').Application}
+ */
 const app = express();
 
+/**
+ * Conexión a la base de datos.
+ * @async
+ */
+database.getInstance(); // Inicializa la conexión a la base de datos
+
+/**
+ * Configuración de Passport.
+ */
+require("./src/js/passportConfig"); // Carga la configuración adicional para Passport
+
+/**
+ * Configuración de directorios estáticos para CSS, JS y almacenamiento.
+ */
 app.use("/css", express.static(join(__dirname, "/src/css")));
 app.use("/js", express.static(join(__dirname, "/src/js")));
 app.use("/storage", express.static(join(__dirname, "/src/storage")));
 
-// Middlewares
-app.use(express.json());
-app.use(sessionMiddleware); // Middleware para sesiones, usa SESSION_SECRET desde .env
-app.use(passport.initialize());
-app.use(passport.session());
+/**
+ * Configuración de middlewares.
+ */
+app.use(express.json()); // Middleware para parsear JSON en las solicitudes
+app.use(sessionMiddleware); // Middleware para manejar sesiones, usa SESSION_SECRET desde .env
+app.use(passport.initialize()); // Inicializa Passport para manejar autenticación
+app.use(passport.session()); // Permite el uso de sesiones con Passport
 
-// Estrategia de Google
+/**
+ * Estrategia de Google para autenticación.
+ */
 passport.use(new GoogleStrategy({
-  clientID: process.env.GOOGLE_CLIENT_ID,
-  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: "http://localhost:5000/auth/google/callback"
+  clientID: process.env.GOOGLE_CLIENT_ID, // ID del cliente de Google
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET, // Secreto del cliente de Google
+  callbackURL: "http://localhost:5000/auth/google/callback" // URL de callback después de la autenticación
 },
 async (accessToken, refreshToken, profile, cb) => {
   try {
-    console.log("Usuario logueado:", profile);
+    console.log("Usuario logueado:", profile); // Loguea el perfil del usuario
 
-    // Verificar si el usuario ya existe con el mismo correo y proveedor
-    let user = await User.findOne({ email: profile.emails[0].value, provider: 'google' });
+    let user = await User.findOne({ email: profile.emails[0].value, provider: 'google' }); // Verifica si el usuario ya existe
 
     if (user) {
-      // Si existe, actualizar la última vez que el usuario inició sesión
-      user.lastLogin = Date.now();
-      await user.save();
-      return cb(null, user);
+      user.lastLogin = Date.now(); // Actualiza la última vez que el usuario inició sesión
+      await user.save(); 
+      return cb(null, user); // Devuelve el usuario existente
     }
 
-    // Verificar si el correo ya está registrado con otro proveedor
-    user = await User.findOne({ email: profile.emails[0].value });
+    user = await User.findOne({ email: profile.emails[0].value }); // Verifica si el correo ya está registrado con otro proveedor
     
     if (user) {
-      // Si existe con otro proveedor, crear un nuevo registro para este proveedor
-      const newUser = new User({
+      const newUser = new User({ 
         providerId: profile.id,
         name: profile.displayName,
         email: profile.emails[0].value,
@@ -63,13 +92,12 @@ async (accessToken, refreshToken, profile, cb) => {
         lastLogin: Date.now()
       });
 
-      await newUser.save();
+      await newUser.save(); 
       console.log("Nuevo usuario guardado:", newUser);
-      return cb(null, newUser);
+      return cb(null, newUser); // Devuelve el nuevo usuario creado con un proveedor diferente
     }
 
-    // Crear un nuevo usuario si no existe con ese correo y proveedor
-    user = new User({
+    user = new User({ // Crea un nuevo usuario si no existe con ese correo y proveedor
       providerId: profile.id,
       name: profile.displayName,
       email: profile.emails[0].value,
@@ -78,41 +106,39 @@ async (accessToken, refreshToken, profile, cb) => {
       lastLogin: Date.now()
     });
 
-    await user.save();
+    await user.save(); 
     console.log("Nuevo usuario guardado:", user);
-    return cb(null, user);
+    return cb(null, user); 
   } catch (error) {
-    console.error("Error al iniciar sesión:", error);
-    return cb(error);
+    console.error("Error al iniciar sesión:", error); 
+    return cb(error); 
   }
 }));
 
-// Estrategia de Discord
+/**
+ * Estrategia de Discord para autenticación.
+ */
 passport.use(new DiscordStrategy({
-  clientID: process.env.DISCORD_CLIENT_ID,
-  clientSecret: process.env.DISCORD_CLIENT_SECRET,
-  callbackURL: 'http://localhost:5000/auth/discord/callback',
-  scope: ['identify', 'email']
+  clientID: process.env.DISCORD_CLIENT_ID, 
+  clientSecret: process.env.DISCORD_CLIENT_SECRET, 
+  callbackURL: 'http://localhost:5000/auth/discord/callback', 
+  scope: ['identify', 'email'] 
 }, 
 async (accessToken, refreshToken, profile, done) => {
   try {
     console.log("Usuario logueado con Discord:", profile);
 
-    // Verificar si el usuario ya existe con el mismo correo y proveedor
-    let user = await User.findOne({ email: profile.email, provider: 'discord' });
+    let user = await User.findOne({ email: profile.email, provider: 'discord' }); 
 
     if (user) {
-      // Si existe, actualizar la última vez que el usuario inició sesión
-      user.lastLogin = Date.now();
+      user.lastLogin = Date.now(); 
       await user.save();
-      return done(null, user);
+      return done(null, user); 
     }
 
-    // Verificar si el correo ya está registrado con otro proveedor
-    user = await User.findOne({ email: profile.email });
+    user = await User.findOne({ email: profile.email }); 
     
     if (user) {
-      // Si existe con otro proveedor, crear un nuevo registro para este proveedor
       const newUser = new User({
         providerId: profile.id,
         name: profile.username,
@@ -127,8 +153,7 @@ async (accessToken, refreshToken, profile, done) => {
       return done(null, newUser);
     }
 
-    // Crear nuevo usuario si no existe
-    user = new User({
+    user = new User({ // Crea un nuevo usuario si no existe con ese correo y proveedor
       providerId: profile.id,
       name: profile.username,
       email: profile.email,
@@ -146,32 +171,30 @@ async (accessToken, refreshToken, profile, done) => {
   }
 }));
 
-// Estrategia de Facebook
+/**
+ * Estrategia de Facebook para autenticación.
+ */
 passport.use(new FacebookStrategy({
-  clientID: process.env.FACEBOOK_CLIENT_ID,
-  clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
-  callbackURL: 'http://localhost:5000/auth/facebook/callback',
-  profileFields: ['id', 'displayName', 'photos', 'email']
+  clientID: process.env.FACEBOOK_CLIENT_ID, 
+  clientSecret: process.env.FACEBOOK_CLIENT_SECRET, 
+  callbackURL: 'http://localhost:5000/auth/facebook/callback', 
+  profileFields: ['id', 'displayName', 'photos', 'email'] 
 },
 async (accessToken, refreshToken, profile, cb) => {
   try {
     console.log("Usuario logueado con Facebook:", profile);
 
-    // Verificar si el usuario ya existe con el mismo correo y proveedor
-    let user = await User.findOne({ email: profile.emails[0].value, provider: 'facebook' });
+    let user = await User.findOne({ email: profile.emails[0].value, provider: 'facebook' }); 
 
     if (user) {
-      // Si existe, actualizar la última vez que el usuario inició sesión
-      user.lastLogin = Date.now();
+      user.lastLogin = Date.now(); 
       await user.save();
-      return cb(null, user);
+      return cb(null, user); 
     }
 
-    // Verificar si el correo ya está registrado con otro proveedor
-    user = await User.findOne({ email: profile.emails[0].value });
+    user = await User.findOne({ email: profile.emails[0].value }); 
     
     if (user) {
-      // Si existe con otro proveedor, crear un nuevo registro para este proveedor
       const newUser = new User({
         providerId: profile.id,
         name: profile.displayName,
@@ -186,8 +209,7 @@ async (accessToken, refreshToken, profile, cb) => {
       return cb(null, newUser);
     }
 
-    // Crear nuevo usuario si no existe
-    user = new User({
+    user = new User({ // Crea un nuevo usuario si no existe con ese correo y proveedor
       providerId: profile.id,
       name: profile.displayName,
       email: profile.emails[0].value,
@@ -205,33 +227,58 @@ async (accessToken, refreshToken, profile, cb) => {
   }
 }));
 
-// Serialización del usuario para la sesión
+/**
+ * Serialización del usuario para la sesión.
+ */
 passport.serializeUser((user, done) => {
-  done(null, user);
+  done(null, user); // Guarda el usuario en la sesión
 });
 
+/**
+ * Deserialización del usuario desde la sesión.
+ */
 passport.deserializeUser((user, done) => {
-  done(null, user);
+  done(null, user); // Recupera el usuario desde la sesión
 });
 
-// Rutas de autenticación
-app.use(authRoutes);
+/**
+ * Configuración de las rutas de autenticación.
+ */
+app.use(authRoutes); 
 
-// Ruta de inicio
-app.use("/", index);
+/**
+ * Ruta principal que redirige a los usuarios no autenticados a Google para iniciar sesión.
+ */
+app.use("/", index); 
 
-// Ruta de dashboard, protegida para usuarios autenticados
-app.get('/dashboard', (req, res) => {
-  if (req.isAuthenticated()) {
-    res.send('Bienvenido al Dashboard');
-  } else {
-    res.redirect('/auth/google');
-  }
+/**
+ * Ruta protegida que solo puede ser accedida por usuarios autenticados.
+ * @name GET /dashboard
+ * @function
+ */
+app.get('/dashboard', (req, res) => { 
+  if (req.isAuthenticated()) { 
+    res.send('Bienvenido al Dashboard'); 
+  } else { 
+    res.redirect('/auth/google'); 
+  } 
 });
 
-const port = process.env.EXPRESS_PORT;
-const host = process.env.EXPRESS_HOST_NAME;
+/**
+ * Puerto y host para el servidor.
+ * @type {number}
+ */
+const port = process.env.EXPRESS_PORT; 
 
-app.listen(port, host, () => {
-  console.log(`${process.env.EXPRESS_PROTOCOL}${host}:${port}`);
+/**
+ * @type {string}
+ */
+const host = process.env.EXPRESS_HOST_NAME; 
+
+/**
+ * Inicia el servidor.
+ * @listens {number} port - Puerto en el que escucha el servidor.
+ */
+app.listen(port, host, () => { 
+  console.log(`${process.env.EXPRESS_PROTOCOL}${host}:${port}`); // Mensaje en consola indicando que el servidor está corriendo
 });
