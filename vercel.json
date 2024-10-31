@@ -8,6 +8,10 @@
     ],
     "routes": [
         {
+            "src": "/auth/discord/callback",
+            "dest": "/app.js"
+        },
+        {
             "src": "/(.*)",
             "dest": "/app.js"
         }
