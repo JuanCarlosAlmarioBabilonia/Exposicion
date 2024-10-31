@@ -26,6 +26,7 @@ const FacebookStrategy = require('passport-facebook').Strategy; // Estrategia de
 const authRoutes = require('./server/routes/userRouter'); // Rutas de autenticación
 const index = require("./server/routes/indexRouter"); // Ruta principal
 const User = require("./server/model/userSchema"); // Modelo de usuario
+const cors = require("cors")
 const { join } = require("path"); // Módulo para manejar rutas
 
 /**
@@ -51,6 +52,16 @@ require("./src/js/passportConfig"); // Carga la configuración adicional para Pa
 app.use("/css", express.static(join(__dirname, "/src/css")));
 app.use("/js", express.static(join(__dirname, "/src/js")));
 app.use("/storage", express.static(join(__dirname, "/src/storage")));
+
+
+const corsOptions = {
+  origin: ['https://localhost:5000', "https://exposicion-ashy.vercel.app"], // Permite ambos orígenes
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true,
+};
+
+
+app.use(cors(corsOptions)); 
 
 /**
  * Configuración de middlewares.
