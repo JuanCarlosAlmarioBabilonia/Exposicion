@@ -77,7 +77,7 @@ app.use(passport.session()); // Permite el uso de sesiones con Passport
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID, // ID del cliente de Google
   clientSecret: process.env.GOOGLE_CLIENT_SECRET, // Secreto del cliente de Google
-  callbackURL: "http://localhost:5000/auth/google/callback" // URL de callback después de la autenticación
+  callbackURL: "https://exposicion-ashy.vercel.app/auth/google/callback" // URL de callback después de la autenticación
 },
 async (accessToken, refreshToken, profile, cb) => {
   try {
@@ -132,7 +132,7 @@ async (accessToken, refreshToken, profile, cb) => {
 passport.use(new DiscordStrategy({
   clientID: process.env.DISCORD_CLIENT_ID, 
   clientSecret: process.env.DISCORD_CLIENT_SECRET, 
-  callbackURL: 'http://localhost:5000/auth/discord/callback', 
+  callbackURL: 'https://exposicion-ashy.vercel.app/auth/discord/callback', 
   scope: ['identify', 'email'] 
 }, 
 async (accessToken, refreshToken, profile, done) => {
@@ -188,7 +188,7 @@ async (accessToken, refreshToken, profile, done) => {
 passport.use(new FacebookStrategy({
   clientID: process.env.FACEBOOK_CLIENT_ID, 
   clientSecret: process.env.FACEBOOK_CLIENT_SECRET, 
-  callbackURL: 'http://localhost:5000/auth/facebook/callback', 
+  callbackURL: 'https://exposicion-ashy.vercel.app/auth/facebook/callback', 
   profileFields: ['id', 'displayName', 'photos', 'email'] 
 },
 async (accessToken, refreshToken, profile, cb) => {
