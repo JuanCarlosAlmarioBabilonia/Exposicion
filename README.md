@@ -43,6 +43,7 @@ const FacebookStrategy = require('passport-facebook').Strategy; // Estrategia de
 const authRoutes = require('./server/routes/userRouter'); // Rutas de autenticación
 const index = require("./server/routes/indexRouter"); // Ruta principal
 const User = require("./server/model/userSchema"); // Modelo de usuario
+const cors = require("cors")
 const { join } = require("path"); // Módulo para manejar rutas
 
 /**
@@ -69,6 +70,16 @@ app.use("/css", express.static(join(__dirname, "/src/css")));
 app.use("/js", express.static(join(__dirname, "/src/js")));
 app.use("/storage", express.static(join(__dirname, "/src/storage")));
 
+
+const corsOptions = {
+  origin: ['https://localhost:5000', "https://exposicion-ruddy.vercel.app"], // Permite ambos orígenes
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true,
+};
+
+
+app.use(cors(corsOptions)); 
+
 /**
  * Configuración de middlewares.
  */
@@ -83,7 +94,7 @@ app.use(passport.session()); // Permite el uso de sesiones con Passport
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID, // ID del cliente de Google
   clientSecret: process.env.GOOGLE_CLIENT_SECRET, // Secreto del cliente de Google
-  callbackURL: "http://localhost:5000/auth/google/callback" // URL de callback después de la autenticación
+  callbackURL: "https://exposicion-ruddy.vercel.app/auth/google/callback" // URL de callback después de la autenticación
 },
 async (accessToken, refreshToken, profile, cb) => {
   try {
@@ -138,7 +149,7 @@ async (accessToken, refreshToken, profile, cb) => {
 passport.use(new DiscordStrategy({
   clientID: process.env.DISCORD_CLIENT_ID, 
   clientSecret: process.env.DISCORD_CLIENT_SECRET, 
-  callbackURL: 'http://localhost:5000/auth/discord/callback', 
+  callbackURL: 'https://exposicion-ruddy.vercel.app/auth/discord/callback', 
   scope: ['identify', 'email'] 
 }, 
 async (accessToken, refreshToken, profile, done) => {
@@ -194,7 +205,7 @@ async (accessToken, refreshToken, profile, done) => {
 passport.use(new FacebookStrategy({
   clientID: process.env.FACEBOOK_CLIENT_ID, 
   clientSecret: process.env.FACEBOOK_CLIENT_SECRET, 
-  callbackURL: 'http://localhost:5000/auth/facebook/callback', 
+  callbackURL: 'https://exposicion-ruddy.vercel.app/auth/facebook/callback', 
   profileFields: ['id', 'displayName', 'photos', 'email'] 
 },
 async (accessToken, refreshToken, profile, cb) => {
@@ -273,13 +284,18 @@ app.use("/", index);
  * @name GET /dashboard
  * @function
  */
-app.get('/dashboard', (req, res) => { 
-  if (req.isAuthenticated()) { 
-    res.send('Bienvenido al Dashboard'); 
-  } else { 
-    res.redirect('/auth/google'); 
-  } 
+// Ruta para servir el dashboard
+app.get('/dashboard', (req, res) => {
+  console.log("Usuario autenticado:", req.isAuthenticated());
+  if (req.isAuthenticated()) {
+      res.sendFile(join(__dirname, 'src/view/dashBoard.html'));
+  } else {
+    console.log("esta mal")
+    res.redirect('https://exposicion-ruddy.vercel.app');
+  }
 });
+
+
 
 /**
  * Puerto y host para el servidor.
