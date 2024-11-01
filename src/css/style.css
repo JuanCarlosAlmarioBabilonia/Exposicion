@@ -71,6 +71,10 @@ h1 {
     background-color: var(--google-color);
 }
 
+.btn{
+    text-decoration: none;
+}
+
 .btn-discord {
     background-color: var(--discord-color);
 }
