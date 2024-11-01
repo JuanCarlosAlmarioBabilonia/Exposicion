@@ -55,7 +55,7 @@ app.use("/storage", express.static(join(__dirname, "/src/storage")));
 
 
 const corsOptions = {
-  origin: ['https://localhost:5000', "https://exposicion-ruddy.vercel.app"], // Permite ambos orígenes
+  origin: ['http://localhost:5000', "https://exposicion-ruddy.vercel.app"], // Permite ambos orígenes
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
 };
@@ -74,10 +74,24 @@ app.use(passport.session()); // Permite el uso de sesiones con Passport
 /**
  * Estrategia de Google para autenticación.
  */
+const isProduction = false; // Cambia a true cuando estés en producción
+
+const config = {
+  development: {
+    callbackURL: "http://localhost:5000/auth/google/callback"
+  },
+  production: {
+    callbackURL: "https://exposicion-ruddy.vercel.app/auth/google/callback"
+  }
+};
+
+// Selecciona el callbackURL basado en la variable isProduction
+const callbackURL = isProduction ? config.production.callbackURL : config.development.callbackURL;
+
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID, // ID del cliente de Google
   clientSecret: process.env.GOOGLE_CLIENT_SECRET, // Secreto del cliente de Google
-  callbackURL: "https://exposicion-ruddy.vercel.app/auth/google/callback" // URL de callback después de la autenticación
+  callbackURL: callbackURL // URL de callback basada en la configuración
 },
 async (accessToken, refreshToken, profile, cb) => {
   try {
@@ -273,12 +287,16 @@ app.get('/dashboard', (req, res) => {
   if (req.isAuthenticated()) {
       res.sendFile(join(__dirname, 'src/view/dashBoard.html'));
   } else {
-    console.log("esta mal")
+    alert("Usuario no autenticado, redirigiendo...");
     res.redirect('https://exposicion-ruddy.vercel.app');
   }
 });
 
-
+// Manejo de errores
+app.use((err, req, res, next) => {
+  console.error("Error no manejado:", err);
+  res.status(500).send("Algo salió mal.");
+});
 
 /**
  * Puerto y host para el servidor.
