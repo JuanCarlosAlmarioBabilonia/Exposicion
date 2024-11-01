@@ -74,7 +74,7 @@ app.use(passport.session()); // Permite el uso de sesiones con Passport
 /**
  * Estrategia de Google para autenticación.
  */
-const isProduction = false; // Cambia a true cuando estés en producción
+const isProduction = true; // Cambia a true cuando estés en producción
 
 const config = {
   development: {
