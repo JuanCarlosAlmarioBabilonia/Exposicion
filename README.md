@@ -10,6 +10,27 @@ npm install i
 npm run dev
 ```
 
+## Ojo
+Si se va a realizar la prueba desde local, tener en cuenta esto:
+
+```javascript
+const isProduction = true;
+```
+
+y cambiarlo a false, para que ahora deje realizarle la autenticación de google desde el local, ya que estará en development y no en production
+
+## Ojo
+
+- A la hora de querer iniciar sesión con un correo **example@gmail.com**, el usuario de este correo debe crear una sesion en [Facebook Developers](https://developers.facebook.com/)
+
+- Luego debe mandar una solicitud de amistad de Facebook al perfil principal del uso el cual es: **Geidy Babilonia Barrios**
+
+- El perfil de uso principal debe aceptarla; luego dirigirse a Roles de la aplicación, luego a roles y por ultimo a añadir persona
+
+- Se busca al usuario a añadir, y se le asigna un rol de administrador
+
+- Luego de esto el usuario solicitado debe aceptar la asignación del rol y finalmente el usuario también queda como administrador y ya puede iniciar sesión con Facebook desde el login
+
 ### Componentes Principales
 
 **1. app.js**
@@ -72,7 +93,7 @@ app.use("/storage", express.static(join(__dirname, "/src/storage")));
 
 
 const corsOptions = {
-  origin: ['https://localhost:5000', "https://exposicion-ruddy.vercel.app"], // Permite ambos orígenes
+  origin: ['https://localhost:5000', "https://exposicion-red.vercel.app"], // Permite ambos orígenes
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
 };
@@ -94,7 +115,7 @@ app.use(passport.session()); // Permite el uso de sesiones con Passport
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID, // ID del cliente de Google
   clientSecret: process.env.GOOGLE_CLIENT_SECRET, // Secreto del cliente de Google
-  callbackURL: "https://exposicion-ruddy.vercel.app/auth/google/callback" // URL de callback después de la autenticación
+  callbackURL: "https://exposicion-red.vercel.app/auth/google/callback" // URL de callback después de la autenticación
 },
 async (accessToken, refreshToken, profile, cb) => {
   try {
@@ -149,7 +170,7 @@ async (accessToken, refreshToken, profile, cb) => {
 passport.use(new DiscordStrategy({
   clientID: process.env.DISCORD_CLIENT_ID, 
   clientSecret: process.env.DISCORD_CLIENT_SECRET, 
-  callbackURL: 'https://exposicion-ruddy.vercel.app/auth/discord/callback', 
+  callbackURL: 'https://exposicion-red.vercel.app/auth/discord/callback', 
   scope: ['identify', 'email'] 
 }, 
 async (accessToken, refreshToken, profile, done) => {
@@ -205,7 +226,7 @@ async (accessToken, refreshToken, profile, done) => {
 passport.use(new FacebookStrategy({
   clientID: process.env.FACEBOOK_CLIENT_ID, 
   clientSecret: process.env.FACEBOOK_CLIENT_SECRET, 
-  callbackURL: 'https://exposicion-ruddy.vercel.app/auth/facebook/callback', 
+  callbackURL: 'https://exposicion-red.vercel.app/auth/facebook/callback', 
   profileFields: ['id', 'displayName', 'photos', 'email'] 
 },
 async (accessToken, refreshToken, profile, cb) => {
@@ -291,7 +312,7 @@ app.get('/dashboard', (req, res) => {
       res.sendFile(join(__dirname, 'src/view/dashBoard.html'));
   } else {
     console.log("esta mal")
-    res.redirect('https://exposicion-ruddy.vercel.app');
+    res.redirect('https://exposicion-red.vercel.app');
   }
 });
 
@@ -559,18 +580,6 @@ Esta guía te llevará a través del proceso de creación de una cuenta de desar
 - Busca **"Inicio de sesión con Facebook"** y haz clic en **"Configurar"**.
 
 - En la configuración del producto, asegúrate de que tu aplicación esté en modo **"Desarrollo"** durante la fase de pruebas. Cuando estés listo para el lanzamiento, cambia a **"Producción"**.
-
-## Ojo
-
-- A la hora de querer iniciar sesión con un correo **example@gmail.com**, el usuario de este correo debe crear una sesion en [Facebook Developers](https://developers.facebook.com/)
-
-- Luego debe mandar una solicitud de amistad de Facebook al perfil principal del uso
-
-- El perfil de uso principal debe aceptarla; luego dirigirse a Roles de la aplicación, luego a roles y por ultimo a añadir persona
-
-- Se busca al usuario a añadir, y se le asigna un rol de administrador
-
-- Luego de esto el usuario solicitado debe aceptar la asignación del rol y finalmente el usuario también queda como administrador y ya puede iniciar sesión con Facebook desde el login
 
 
 # Proceso de Autenticación OAuth2 con Google
