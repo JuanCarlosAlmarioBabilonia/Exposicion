@@ -93,7 +93,7 @@ app.use("/storage", express.static(join(__dirname, "/src/storage")));
 
 
 const corsOptions = {
-  origin: ['https://localhost:5000', "https://exposicion-pi.vercel.app"], // Permite ambos orígenes
+  origin: ['https://localhost:5000', "https://exposicion-cyan.vercel.app"], // Permite ambos orígenes
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
 };
@@ -115,7 +115,7 @@ app.use(passport.session()); // Permite el uso de sesiones con Passport
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID, // ID del cliente de Google
   clientSecret: process.env.GOOGLE_CLIENT_SECRET, // Secreto del cliente de Google
-  callbackURL: "https://exposicion-pi.vercel.app/auth/google/callback" // URL de callback después de la autenticación
+  callbackURL: "https://exposicion-cyan.vercel.app/auth/google/callback" // URL de callback después de la autenticación
 },
 async (accessToken, refreshToken, profile, cb) => {
   try {
@@ -170,7 +170,7 @@ async (accessToken, refreshToken, profile, cb) => {
 passport.use(new DiscordStrategy({
   clientID: process.env.DISCORD_CLIENT_ID, 
   clientSecret: process.env.DISCORD_CLIENT_SECRET, 
-  callbackURL: 'https://exposicion-pi.vercel.app/auth/discord/callback', 
+  callbackURL: 'https://exposicion-cyan.vercel.app/auth/discord/callback', 
   scope: ['identify', 'email'] 
 }, 
 async (accessToken, refreshToken, profile, done) => {
@@ -226,7 +226,7 @@ async (accessToken, refreshToken, profile, done) => {
 passport.use(new FacebookStrategy({
   clientID: process.env.FACEBOOK_CLIENT_ID, 
   clientSecret: process.env.FACEBOOK_CLIENT_SECRET, 
-  callbackURL: 'https://exposicion-pi.vercel.app/auth/facebook/callback', 
+  callbackURL: 'https://exposicion-cyan.vercel.app/auth/facebook/callback', 
   profileFields: ['id', 'displayName', 'photos', 'email'] 
 },
 async (accessToken, refreshToken, profile, cb) => {
@@ -312,7 +312,7 @@ app.get('/dashboard', (req, res) => {
       res.sendFile(join(__dirname, 'src/view/dashBoard.html'));
   } else {
     console.log("esta mal")
-    res.redirect('https://exposicion-pi.vercel.app');
+    res.redirect('https://exposicion-cyan.vercel.app');
   }
 });
 

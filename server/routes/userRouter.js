@@ -21,25 +21,11 @@ router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 
  * @name GET /auth/google/callback
  * @function
  */
-router.get('/auth/google/callback', (req, res, next) => {
-    passport.authenticate('google', (err, user, info) => {
-        if (err) {
-            console.error("Error de autenticación:", err);
-            return next(err); // Esto pasa el error al manejador de errores
-        }
-        if (!user) {
-            console.log("Usuario no encontrado:", info);
-            return res.redirect('/login');
-        }
-        req.logIn(user, (err) => {
-            if (err) {
-                console.error("Error al iniciar sesión:", err);
-                return next(err);
-            }
-            return res.redirect('/dashboard');
-        });
-    })(req, res, next);    
-});
+
+router.get('/auth/google/callback', passport.authenticate('google', {
+    successRedirect: '/dashboard', // Página después de iniciar sesión
+    failureRedirect: 'https://exposicion-cyan.vercel.app' // Página en caso de fallo en la autenticación
+}));
 
 /**
  * Ruta para iniciar la autenticación con Discord.
@@ -56,7 +42,7 @@ router.get('/auth/discord', passport.authenticate('discord', { scope: ['identify
  */
 router.get('/auth/discord/callback', passport.authenticate('discord', {
     successRedirect: '/dashboard', // Página después de iniciar sesión
-    failureRedirect: 'https://exposicion-pi.vercel.app' // Página en caso de fallo en la autenticación
+    failureRedirect: 'https://exposicion-cyan.vercel.app' // Página en caso de fallo en la autenticación
 }));
 
 /**
@@ -74,7 +60,7 @@ router.get('/auth/facebook', passport.authenticate('facebook', { scope: ['email'
  */
 router.get('/auth/facebook/callback', passport.authenticate('facebook', {
     successRedirect: '/dashboard', // Página después de iniciar sesión
-    failureRedirect: 'https://exposicion-pi.vercel.app' // Página en caso de fallo en la autenticación
+    failureRedirect: 'https://exposicion-cyan.vercel.app' // Página en caso de fallo en la autenticación
 }));
 
 module.exports = router; // Exporta el enrutador para su uso en otras partes de la aplicación
