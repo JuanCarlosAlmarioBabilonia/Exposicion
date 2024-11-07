@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now }, // Fecha de creación del registro
     lastLogin: { type: Date, default: Date.now } // Fecha del último inicio de sesión
 }, {
-    collection: "users", // Nombre de la colección en la base de datos
+    collection: "user", // Nombre de la colección en la base de datos
     versionKey: false // Desactiva el campo __v que Mongoose agrega por defecto
 });
 
