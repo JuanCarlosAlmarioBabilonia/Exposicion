@@ -56,7 +56,7 @@ router.get('/auth/discord', passport.authenticate('discord', { scope: ['identify
  */
 router.get('/auth/discord/callback', passport.authenticate('discord', {
     successRedirect: '/dashboard', // Página después de iniciar sesión
-    failureRedirect: 'https://exposicion-red.vercel.app' // Página en caso de fallo en la autenticación
+    failureRedirect: 'https://exposicion-pi.vercel.app' // Página en caso de fallo en la autenticación
 }));
 
 /**
@@ -74,7 +74,7 @@ router.get('/auth/facebook', passport.authenticate('facebook', { scope: ['email'
  */
 router.get('/auth/facebook/callback', passport.authenticate('facebook', {
     successRedirect: '/dashboard', // Página después de iniciar sesión
-    failureRedirect: 'https://exposicion-red.vercel.app' // Página en caso de fallo en la autenticación
+    failureRedirect: 'https://exposicion-pi.vercel.app' // Página en caso de fallo en la autenticación
 }));
 
 module.exports = router; // Exporta el enrutador para su uso en otras partes de la aplicación

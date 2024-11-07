@@ -55,7 +55,7 @@ app.use("/storage", express.static(join(__dirname, "/src/storage")));
 
 
 const corsOptions = {
-  origin: ['http://localhost:5000', "https://exposicion-red.vercel.app"], // Permite ambos orígenes
+  origin: ['http://localhost:5000', "https://exposicion-pi.vercel.app"], // Permite ambos orígenes
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
 };
@@ -81,7 +81,7 @@ const config = {
     callbackURL: "http://localhost:5000/auth/google/callback"
   },
   production: {
-    callbackURL: "https://exposicion-red.vercel.app/auth/google/callback"
+    callbackURL: "https://exposicion-pi.vercel.app/auth/google/callback"
   }
 };
 
@@ -146,7 +146,7 @@ async (accessToken, refreshToken, profile, cb) => {
 passport.use(new DiscordStrategy({
   clientID: process.env.DISCORD_CLIENT_ID, 
   clientSecret: process.env.DISCORD_CLIENT_SECRET, 
-  callbackURL: 'https://exposicion-red.vercel.app/auth/discord/callback', 
+  callbackURL: 'https://exposicion-pi.vercel.app/auth/discord/callback', 
   scope: ['identify', 'email'] 
 }, 
 async (accessToken, refreshToken, profile, done) => {
@@ -202,7 +202,7 @@ async (accessToken, refreshToken, profile, done) => {
 passport.use(new FacebookStrategy({
   clientID: process.env.FACEBOOK_CLIENT_ID, 
   clientSecret: process.env.FACEBOOK_CLIENT_SECRET, 
-  callbackURL: 'https://exposicion-red.vercel.app/auth/facebook/callback', 
+  callbackURL: 'https://exposicion-pi.vercel.app/auth/facebook/callback', 
   profileFields: ['id', 'displayName', 'photos', 'email'] 
 },
 async (accessToken, refreshToken, profile, cb) => {
@@ -288,7 +288,7 @@ app.get('/dashboard', (req, res) => {
       res.sendFile(join(__dirname, 'src/view/dashBoard.html'));
   } else {
     alert("Usuario no autenticado, redirigiendo...");
-    res.redirect('https://exposicion-red.vercel.app');
+    res.redirect('https://exposicion-pi.vercel.app');
   }
 });
 
